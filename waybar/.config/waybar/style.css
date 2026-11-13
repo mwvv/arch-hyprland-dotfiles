@@ -1,47 +1,99 @@
+/* Waybar — Glass neutro (el blur lo pone Hyprland con layer_rule) */
+@define-color glass   rgba(22, 22, 26, 0.39);
+@define-color surface rgba(255, 255, 255, 0.07);
+@define-color hover   rgba(255, 255, 255, 0.12);
+@define-color active  rgba(255, 255, 255, 0.24);
+@define-color line    rgba(255, 255, 255, 0.16);
+@define-color fg      #f2f2f2;
+@define-color dim     rgba(255, 255, 255, 0.50);
+@define-color faint   rgba(255, 255, 255, 0.25);
+@define-color warn    #f5d491;
+@define-color crit    #ff8a8a;
+@define-color ok      #b5e8b0;
+@define-color hi      #ffffff;
+@define-color onact   #ffffff;
+@define-color tipbg   rgba(22, 22, 26, 0.85);
+@define-color sep     rgba(255, 255, 255, 0.10);
+
 * {
-  font-family: "JetBrainsMono Nerd Font";
+  font-family: "Inter", "Symbols Nerd Font", sans-serif;
   font-size: 13px;
+  font-weight: 500;
+  font-feature-settings: "tnum";   /* números de ancho fijo: no "bailan" al cambiar */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  border: none;
+  border-radius: 0;
+  min-height: 0;
 }
+
 window#waybar {
-  background: rgba(20, 24, 40, 0.85);
-  color: #cdd6f4;
+  background: @glass;
+  color: @fg;
+  border-radius: 12px;
+  border: 1px solid @line;
 }
-#workspaces button.active {
-  color: #89dceb;
+
+tooltip {
+  background: @tipbg;
+  border: 1px solid @line;
+  border-radius: 10px;
 }
-#battery.warning { color: #f9e2af; }
-#battery.critical { color: #f38ba8; }
-#clock, #battery, #network, #tray {
+tooltip label { color: @fg; }
+
+/* ---------- Izquierda ---------- */
+#workspaces {
+  margin: 5px 4px 5px 6px;
+  padding: 0 2px;
+  background: @surface;
+  border-radius: 8px;
+}
+#workspaces button {
+  color: @dim;
+  padding: 0 9px;
+  margin: 2px 1px;
+  border-radius: 6px;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+#workspaces button.empty  { color: @faint; }
+#workspaces button:hover  { color: @fg; background: @hover; box-shadow: none; }
+#workspaces button.active { color: @onact; background: @active; }
+#workspaces button.urgent { color: @crit; }
+
+#window {
+  color: @dim;
   padding: 0 10px;
 }
 
-
-#clock, #cpu, #memory, #pulseaudio, #network, #battery, #tray {
-  padding: 0 5px;
-  margin: 0 1px;
-}
-
-#custom-perfil {
+/* ---------- Centro ---------- */
+#clock {
+  color: @fg;
+  font-weight: 600;
   padding: 0 14px;
-  min-width: 20px;
-  margin: 0 3px;
 }
 
-#custom-perfil.power-saver {
-  color: #a6e3a1;
+/* ---------- Derecha ---------- */
+#custom-perfil, #cpu, #memory, #backlight, #pulseaudio, #network, #battery, #tray {
+  padding: 0 10px;
+  color: @fg;
 }
 
-#custom-perfil.balanced {
-  color: #89b4fa;
+/* separador sutil entre módulos */
+#cpu, #memory, #backlight, #pulseaudio, #network, #battery {
+  border-left: 1px solid @sep;
 }
 
-#custom-perfil.performance {
-  color: #f38ba8;
-}
+#tray { padding-right: 12px; }
 
+#pulseaudio.muted,
+#network.disconnected { color: @dim; }
 
+#battery.charging, #battery.plugged { color: @hi; }
+#battery.warning:not(.charging)     { color: @warn; }
+#battery.critical:not(.charging)    { color: @crit; }
 
-
-
-
-
+/* Perfil de energía */
+#custom-perfil { padding: 0 12px; }
+#custom-perfil.power-saver { color: @ok; }
+#custom-perfil.balanced    { color: @dim; }
+#custom-perfil.performance { color: @warn; }

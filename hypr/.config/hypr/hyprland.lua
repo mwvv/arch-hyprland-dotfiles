@@ -57,6 +57,9 @@ local menu        = "hyprlauncher"
 hl.on("hyprland.start", function ()
   hl.exec_cmd("waybar")
   hl.exec_cmd("hyprpaper")
+  hl.exec_cmd("mako")
+  hl.exec_cmd("hypridle")
+  hl.exec_cmd("systemctl --user start hyprpolkitagent")
 end)
 
 -------------------------------
@@ -101,8 +104,8 @@ hl.config({
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border   = { colors = {"rgba(ffffff59)", "rgba(ffffff1a)"}, angle = 45 },
+            inactive_border = "rgba(ffffff12)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -131,9 +134,11 @@ hl.config({
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 8,
+            passes    = 3,
+            noise     = 0.02,
             vibrancy  = 0.1696,
+            popups    = true,
         },
     },
 
@@ -249,12 +254,6 @@ hl.gesture({
     action = "workspace"
 })
 
--- Example per-device config
--- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Devices/ for more
-hl.device({
-    name        = "epic-mouse-v1",
-    sensitivity = -0.5,
-})
 
 
 ---------------------
@@ -273,6 +272,7 @@ hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))      -- lock screen
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd('mkdir -p ~/Pictures && grim -g "$(slurp)" ~/Pictures/$(date +%F_%H-%M-%S).png'))
 -- Move focus with mainMod + arrow keys
@@ -345,6 +345,16 @@ hl.window_rule({
     no_focus = true,
 })
 
+-- Efecto vidrio (blur) detrás de la barra, el menú de rofi y las notificaciones
+for _, ns in ipairs({ "waybar", "rofi", "notifications" }) do
+    hl.layer_rule({
+        name  = "glass-" .. ns,
+        match = { namespace = "^" .. ns .. "$" },
+        blur         = true,
+        ignore_alpha = 0.1,
+    })
+end
+
 -- Layer rules also return a handle.
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",
@@ -360,4 +370,11 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
+})
+
+-- Kitty sin desenfoque (transparencia limpia)
+hl.window_rule({
+    name  = "kitty-no-blur",
+    match = { class = "^kitty$" },
+    no_blur = true,
 })

@@ -1,44 +1,133 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 30,
-  "modules-left": ["hyprland/workspaces"],
-  "modules-center": ["clock"],
-  "modules-right": ["cpu", "memory", "pulseaudio", "network", "custom/perfil", "battery", "tray"],
+  "height": 34,
+  "margin-top": 8,
+  "margin-left": 20,
+  "margin-right": 20,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/window"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "custom/perfil",
+    "cpu",
+    "memory",
+    "backlight",
+    "pulseaudio",
+    "network",
+    "battery",
+    "tray"
+  ],
+  "hyprland/workspaces": {
+    "format": "{id}",
+    "on-click": "activate",
+    "persistent-workspaces": {
+      "*": 5
+    },
+    "sort-by-number": true
+  },
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 50,
+    "separate-outputs": true,
+    "rewrite": {
+      "(.*) — Mozilla Firefox": "$1",
+      "^[^A-Za-z0-9]+ (.*)": "$1"
+    }
+  },
   "clock": {
-    "format": "{:%H:%M  %a %d/%m}"
+    "format": "{:%H:%M}",
+    "format-alt": "{:%A %d %B %Y}",
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "months": "<span color='#e6e6e6'><b>{}</b></span>",
+        "weekdays": "<span color='#6c6c6c'>{}</span>",
+        "today": "<span color='#d22630'><b>{}</b></span>"
+      }
+    }
   },
   "cpu": {
-    "format": "\uf2db {usage}%"
+    "format": "󰻠  {usage}%",
+    "interval": 3,
+    "tooltip": false
   },
   "memory": {
-    "format": "\uf538 {percentage}%"
+    "format": "󰍛  {percentage}%",
+    "interval": 5,
+    "tooltip-format": "{used:0.1f} / {total:0.1f} GiB"
+  },
+  "backlight": {
+    "format": "{icon}  {percent}%",
+    "format-icons": [
+      "󰃞",
+      "󰃟",
+      "󰃠"
+    ],
+    "on-scroll-up": "brightnessctl -e4 -n2 set 5%+",
+    "on-scroll-down": "brightnessctl -e4 -n2 set 5%-",
+    "tooltip": false
   },
   "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-muted": "\uf026 mute",
-    "format-icons": { "default": ["\uf027", "\uf028"] },
-    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    "format": "{icon}  {volume}%",
+    "format-muted": "󰝟  mute",
+    "format-icons": {
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "scroll-step": 5,
+    "tooltip-format": "{desc}"
   },
   "network": {
-    "format-wifi": "\uf1eb {signalStrength}%",
-    "format-disconnected": "\uf071 sin red",
-    "on-click": "kitty -e nmtui"
+    "format-wifi": "{icon}  {signalStrength}%",
+    "format-ethernet": "󰈀  wired",
+    "format-disconnected": "󰤮  offline",
+    "format-icons": [
+      "󰤟",
+      "󰤢",
+      "󰤥",
+      "󰤨"
+    ],
+    "tooltip-format-wifi": "{essid} · {signalStrength}%\n{ipaddr}",
+    "max-length": 12,
+    "on-click": "~/.config/waybar/scripts/wifi-menu.sh",
+    "on-click-right": "kitty -e nmtui"
   },
   "battery": {
-    "format": "{icon} {capacity}%",
-    "format-charging": "\uf0e7 {capacity}%",
-    "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
-    "states": { "warning": 30, "critical": 15 }
+    "format": "{icon}  {capacity}%",
+    "format-charging": "󰂄  {capacity}%",
+    "format-plugged": "󰚥  {capacity}%",
+    "format-icons": [
+      "󰁺",
+      "󰁼",
+      "󰁾",
+      "󰂀",
+      "󰁹"
+    ],
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "tooltip-format": "{timeTo}"
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 8
   },
   "custom/perfil": {
     "exec": "/home/mwvv/.local/bin/perfil-waybar",
     "return-type": "json",
     "interval": 1,
     "on-click": "/home/mwvv/.local/bin/ciclar-perfil"
-}
- 
-}
-}
-
+  }
 }

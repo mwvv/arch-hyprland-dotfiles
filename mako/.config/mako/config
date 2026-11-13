@@ -1,0 +1,19 @@
+# Notificaciones — Glass neutro
+font=JetBrainsMono Nerd Font 10
+background-color=#16161a59
+text-color=#f2f2f2
+border-color=#ffffff33
+border-size=1
+border-radius=12
+padding=12
+margin=10
+width=350
+default-timeout=5000
+anchor=top-right
+
+[urgency=low]
+border-color=#ffffff1a
+
+[urgency=critical]
+border-color=#ff8a8a
+default-timeout=0

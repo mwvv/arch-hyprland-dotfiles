@@ -1,0 +1,64 @@
+/* Menú de wifi — Glass neutro, anclado bajo el módulo de red */
+* {
+    font:             "Inter 11";
+    bg:               #16161a52;
+    surface:          #ffffff12;
+    fg:               #f2f2f2;
+    dim:              #ffffff80;
+    accent:           #ffffff3d;
+    onaccent:         #ffffff;
+    bordercol:        #ffffff29;
+
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+window {
+    location:         north east;
+    anchor:           north east;
+    x-offset:         -116px;
+    y-offset:         6px;
+    width:            320px;
+    background-color: @bg;
+    border:           1px solid;
+    border-color:     @bordercol;
+    border-radius:    12px;
+}
+
+mainbox {
+    padding:  10px;
+    spacing:  8px;
+    children: [ inputbar, message, listview ];
+}
+
+inputbar {
+    padding:          8px 10px;
+    background-color: @surface;
+    border-radius:    7px;
+    children:         [ prompt, entry ];
+    spacing:          10px;
+}
+prompt { text-color: @fg; }
+entry  { placeholder: "Buscar red…"; placeholder-color: @dim; }
+
+message  { padding: 0 4px; }
+textbox  { text-color: @dim; font: "Inter 10"; }
+
+listview {
+    lines:     8;
+    columns:   1;
+    fixed-height: false;
+    scrollbar: false;
+    spacing:   2px;
+}
+
+element {
+    padding:       7px 10px;
+    border-radius: 6px;
+}
+element-text { font: "Inter, Symbols Nerd Font 11"; }
+element selected.normal {
+    background-color: @accent;
+    text-color:       @onaccent;
+}
+element-text selected { text-color: inherit; }
