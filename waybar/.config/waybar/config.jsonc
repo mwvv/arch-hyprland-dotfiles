@@ -8,16 +8,17 @@
   "spacing": 0,
   "modules-left": [
     "hyprland/workspaces",
+    "custom/minimized",
     "hyprland/window"
   ],
   "modules-center": [
     "clock"
   ],
   "modules-right": [
+    "custom/music",
     "custom/perfil",
     "cpu",
     "memory",
-    "backlight",
     "pulseaudio",
     "network",
     "battery",
@@ -62,17 +63,6 @@
     "interval": 5,
     "tooltip-format": "{used:0.1f} / {total:0.1f} GiB"
   },
-  "backlight": {
-    "format": "{icon}  {percent}%",
-    "format-icons": [
-      "󰃞",
-      "󰃟",
-      "󰃠"
-    ],
-    "on-scroll-up": "brightnessctl -e4 -n2 set 5%+",
-    "on-scroll-down": "brightnessctl -e4 -n2 set 5%-",
-    "tooltip": false
-  },
   "pulseaudio": {
     "format": "{icon}  {volume}%",
     "format-muted": "󰝟  mute",
@@ -99,13 +89,13 @@
       "󰤨"
     ],
     "tooltip-format-wifi": "{essid} · {signalStrength}%\n{ipaddr}",
-    "max-length": 12,
     "on-click": "~/.config/waybar/scripts/wifi-menu.sh",
     "on-click-right": "kitty -e nmtui",
     "format-disabled": "󰀝  avión",
     "format-linked": "󰤮  sin IP",
     "tooltip-format-disabled": "Modo avión / Wi-Fi apagado · clic para encender",
-    "tooltip-format-disconnected": "Sin conexión · clic para ver redes"
+    "tooltip-format-disconnected": "Sin conexión · clic para ver redes",
+    "interface": "wlp*"
   },
   "battery": {
     "format": "{icon}  {capacity}%",
@@ -138,5 +128,21 @@
     "format": "󰐥",
     "tooltip-format": "Apagar, reiniciar, bloquear…",
     "on-click": "powermenu"
+  },
+  "custom/minimized": {
+    "exec": "minimized-menu --count",
+    "return-type": "json",
+    "interval": 3,
+    "signal": 8,
+    "on-click": "minimized-menu",
+    "on-click-right": "minimized-menu --all"
+  },
+  "custom/music": {
+    "exec": "music-status",
+    "return-type": "json",
+    "restart-interval": 5,
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+    "on-click-middle": "playerctl previous"
   }
 }

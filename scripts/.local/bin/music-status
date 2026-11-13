@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""Estado de la música para Waybar (reemplaza al módulo mpris, que se caía
+cuando el reproductor se cerraba). Escucha a playerctl y emite JSON por línea."""
+import json, subprocess, sys
+
+ICONS = {"spotify": "", "firefox": "\U000f0239", "chromium": ""}
+NOTE, PAUSE = "\U000f0386", "\U000f03e4"
+MAXLEN = 20
+
+def emit(obj):
+    print(json.dumps(obj, ensure_ascii=False), flush=True)
+
+fmt = "{{status}}\t{{playerName}}\t{{title}}\t{{artist}}\t{{album}}"
+proc = subprocess.Popen(["playerctl", "metadata", "--follow", "--format", fmt],
+                        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+emit({"text": "", "class": "stopped"})
+for line in proc.stdout:
+    parts = line.rstrip("\n").split("\t")
+    if len(parts) < 5 or not parts[2]:
+        emit({"text": "", "class": "stopped"})
+        continue
+    status, player, title, artist, album = parts
+    text = title
+    if len(text) > MAXLEN:
+        text = text[:MAXLEN - 1] + "…"
+    icon = PAUSE if status == "Paused" else ICONS.get(player, NOTE)
+    tip = f"{player}: {title}\n{artist}" + (f" — {album}" if album else "")
+    tip += "\nclic: pausa · clic der: siguiente · clic rueda: anterior"
+    emit({"text": f"{icon}  {text}", "tooltip": tip,
+          "class": "paused" if status == "Paused" else "playing"})

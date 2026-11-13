@@ -299,6 +299,8 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot"))               
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("screenshot --edit"))         -- captura → editar con satty
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("rice-theme"))                -- elegir tema de color
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("wallpaper-menu"))                    -- cambiar fondo de pantalla
+hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("minimize"))                          -- minimizar ventana
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("minimized-menu"))            -- ver/restaurar minimizadas
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))

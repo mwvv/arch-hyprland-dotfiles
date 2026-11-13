@@ -73,13 +73,13 @@ tooltip label { color: @fg; }
 }
 
 /* ---------- Derecha ---------- */
-#custom-perfil, #cpu, #memory, #backlight, #pulseaudio, #network, #battery, #tray {
-  padding: 0 10px;
+#custom-perfil, #cpu, #memory, #pulseaudio, #network, #battery, #tray {
+  padding: 0 8px;
   color: @fg;
 }
 
 /* separador sutil entre módulos */
-#cpu, #memory, #backlight, #pulseaudio, #network, #battery {
+#cpu, #memory, #pulseaudio, #network, #battery {
   border-left: 1px solid @sep;
 }
 
@@ -107,3 +107,21 @@ tooltip label { color: @fg; }
   border-left: 1px solid @sep;
 }
 #custom-power:hover { color: @crit; }
+
+/* Música: solo aparece cuando algo está sonando */
+#custom-music {
+  padding: 0 12px;
+  color: @fg;
+  border-right: 1px solid @sep;
+}
+#custom-music.paused { color: @dim; }
+
+/* Ventanas minimizadas: solo aparece si hay alguna */
+#custom-minimized {
+  color: @fg;
+  padding: 0 10px;
+  margin: 5px 2px;
+  background: @surface;
+  border-radius: 7px;
+}
+#custom-minimized:hover { background: @hover; }

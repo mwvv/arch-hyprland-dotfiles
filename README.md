@@ -23,6 +23,8 @@ El script instala los paquetes de `packages.txt`, respalda tus configs actuales 
 | `SUPER + C` | Cerrar ventana |
 | `SUPER + F` | Maximizar |
 | `SUPER + SHIFT + V` | Ventana flotante |
+| `SUPER + N` | Minimizar ventana |
+| `SUPER + SHIFT + N` | Ver y restaurar ventanas minimizadas |
 | `SUPER + flechas` | Mover el foco |
 | `SUPER + SHIFT + flechas` | Mover ventana |
 | `SUPER + CTRL + flechas` | Redimensionar ventana |

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Lista las ventanas minimizadas y trae la elegida al workspace actual.
+#   minimized-menu          → menú (rofi)
+#   minimized-menu --count  → JSON para el módulo de Waybar
+#   minimized-menu --all    → restaura todas
+pgrep -x rofi >/dev/null && [[ -z $1 ]] && { pkill -x rofi; exit 0; }
+
+list() {  # dirección<TAB>clase<TAB>título
+  hyprctl clients -j | python3 -c '
+import json, sys
+for c in json.load(sys.stdin):
+    if c["workspace"]["name"] == "special:minimized":
+        print(c["address"], c["class"], c["title"], sep="\t")'
+}
+
+restore() {
+  ws=$(hyprctl activeworkspace -j | python3 -c 'import json,sys;print(json.load(sys.stdin)["id"])')
+  hyprctl dispatch "hl.dsp.window.move({ workspace = $ws, window = \"address:$1\", follow = false })" >/dev/null
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$1\" })" >/dev/null 2>&1
+}
+
+wins=$(list)
+n=$(grep -c . <<<"$wins")
+
+case "$1" in
+  --count)
+    if (( n == 0 )); then echo '{"text":"","class":"empty"}'
+    else
+      tip=$(cut -f3 <<<"$wins" | sed 's/"/\\"/g' | paste -sd '|' | sed 's/|/\\n/g')
+      printf '{"text":"󰖰  %d","tooltip":"Minimizadas:\\n%s\\n\\nclic: elegir · clic der: restaurar todas","class":"active"}\n' "$n" "$tip"
+    fi
+    exit 0 ;;
+  --all)
+    while IFS=$'\t' read -r a _; do [[ -n $a ]] && restore "$a"; done <<<"$wins"
+    pkill -RTMIN+8 waybar; exit 0 ;;
+esac
+
+(( n == 0 )) && { notify-send -a "Ventanas" "No hay ventanas minimizadas" ""; exit 0; }
+
+# Menú: ícono de la app + título
+choice=$(while IFS=$'\t' read -r a cls title; do
+           printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$title" "${cls,,}" "$a"
+         done <<<"$wins" |
+         rofi -dmenu -i -no-custom -p "Minimizadas" -format i \
+              -theme ~/.config/rofi/launcher.rasi \
+              -theme-str "listview { lines: $(( n < 8 ? n : 8 )); } entry { placeholder: \"Buscar ventana…\"; }")
+[[ -z $choice ]] && exit 0
+
+addr=$(sed -n "$((choice + 1))p" <<<"$wins" | cut -f1)
+[[ -n $addr ]] && restore "$addr"
+pkill -RTMIN+8 waybar

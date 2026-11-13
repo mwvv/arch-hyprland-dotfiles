@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Minimiza la ventana activa: la manda a un workspace escondido (special:minimized)
+# sin abrirlo. Se recuperan con el botón de Waybar o con SUPER+SHIFT+N.
+addr=$(hyprctl activewindow -j | python3 -c 'import json,sys;print(json.load(sys.stdin).get("address",""))')
+[[ -z $addr ]] && exit 0
+hyprctl dispatch "hl.dsp.window.move({ workspace = \"special:minimized\", window = \"address:$addr\", follow = false })" >/dev/null
+pkill -RTMIN+8 waybar   # actualizar el contador
