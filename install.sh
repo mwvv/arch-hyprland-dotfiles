@@ -40,6 +40,8 @@ gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark
 gsettings set org.gnome.desktop.interface cursor-theme capitaine-cursors
 gsettings set org.gnome.desktop.interface cursor-size 24
 gsettings set org.gnome.desktop.interface font-name 'Inter 11'
+# Dolphin (KDE) no toma el esquema de colores por sí solo
+kwriteconfig6 --file dolphinrc --group UiSettings --key ColorScheme GlassNeutro 2>/dev/null || true
 
 # 5. Servicios
 sudo systemctl enable --now NetworkManager power-profiles-daemon >/dev/null 2>&1 || true
