@@ -37,7 +37,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "kitty"
 local fileManager = "dolphin"
-local menu        = "hyprlauncher"
+local menu        = "rofi -show drun"
 
 
 -------------------
@@ -60,6 +60,10 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("mako")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
+  hl.exec_cmd("swayosd-server")                                  -- OSD de volumen/brillo
+  hl.exec_cmd("wl-paste --type text  --watch cliphist store")    -- historial del portapapeles
+  hl.exec_cmd("wl-paste --type image --watch cliphist store")
+  hl.exec_cmd("hyprsunset")                                      -- luz nocturna
 end)
 
 -------------------------------
@@ -70,6 +74,8 @@ end)
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_THEME", "capitaine-cursors")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")   -- tema oscuro para apps Qt (Dolphin)
 
 
 -----------------------
@@ -222,6 +228,7 @@ hl.config({
     misc = {
         force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        disable_splash_rendering = true,  -- quita el texto de broma sobre el fondo
     },
 })
 
@@ -266,21 +273,36 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
 local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("powermenu"))                         -- menú de apagado
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("clipboard-menu"))                    -- historial del portapapeles
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))      -- lock screen
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
-hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd('mkdir -p ~/Pictures && grim -g "$(slurp)" ~/Pictures/$(date +%F_%H-%M-%S).png'))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot"))                -- captura → portapapeles + aviso
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("screenshot --edit"))         -- captura → editar con satty
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("rice-theme"))                -- elegir tema de color
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("wallpaper-menu"))                    -- cambiar fondo de pantalla
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+
+-- Mover ventanas con mainMod + SHIFT + flechas
+hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
+
+-- Redimensionar con mainMod + CTRL + flechas (mantener para repetir)
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.window.resize({ x = -40, y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 40,  y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + up",    hl.dsp.window.resize({ x = 0,   y = -40, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + down",  hl.dsp.window.resize({ x = 0,   y = 40,  relative = true }), { repeating = true })
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
@@ -298,12 +320,13 @@ hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Laptop multimedia keys for volume and LCD brightness
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
-hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+-- (con indicador en pantalla de swayosd)
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume raise --max-volume 100"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume lower"),                  { locked = true, repeating = true })
+hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"),            { locked = true })
+hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"),             { locked = true })
+hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("swayosd-client --brightness raise"),                     { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("swayosd-client --brightness lower"),                     { locked = true, repeating = true })
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
@@ -346,7 +369,7 @@ hl.window_rule({
 })
 
 -- Efecto vidrio (blur) detrás de la barra, el menú de rofi y las notificaciones
-for _, ns in ipairs({ "waybar", "rofi", "notifications" }) do
+for _, ns in ipairs({ "waybar", "rofi", "notifications", "swayosd" }) do
     hl.layer_rule({
         name  = "glass-" .. ns,
         match = { namespace = "^" .. ns .. "$" },
@@ -377,4 +400,18 @@ hl.window_rule({
     name  = "kitty-no-blur",
     match = { class = "^kitty$" },
     no_blur = true,
+})
+
+-- Ventanas que se abren flotando y centradas
+hl.window_rule({
+    name  = "float-utilities",
+    match = { class = "^(org.pulseaudio.pavucontrol|nm-connection-editor|com.gabm.satty|qt6ct|nwg-look|xdg-desktop-portal-gtk)$" },
+    float = true,
+    center = true,
+})
+hl.window_rule({
+    name  = "float-dialogs",
+    match = { title = "^(Open File|Save File|Open Folder|Abrir archivo|Guardar archivo|Seleccionar.*)$" },
+    float = true,
+    center = true,
 })

@@ -21,14 +21,12 @@
     "pulseaudio",
     "network",
     "battery",
-    "tray"
+    "tray",
+    "custom/power"
   ],
   "hyprland/workspaces": {
     "format": "{id}",
     "on-click": "activate",
-    "persistent-workspaces": {
-      "*": 5
-    },
     "sort-by-number": true
   },
   "hyprland/window": {
@@ -51,7 +49,8 @@
         "weekdays": "<span color='#6c6c6c'>{}</span>",
         "today": "<span color='#d22630'><b>{}</b></span>"
       }
-    }
+    },
+    "on-click-right": "hyprsunset-toggle"
   },
   "cpu": {
     "format": "󰻠  {usage}%",
@@ -86,7 +85,8 @@
     },
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "scroll-step": 5,
-    "tooltip-format": "{desc}"
+    "tooltip-format": "{desc}",
+    "on-click-right": "pavucontrol"
   },
   "network": {
     "format-wifi": "{icon}  {signalStrength}%",
@@ -101,7 +101,11 @@
     "tooltip-format-wifi": "{essid} · {signalStrength}%\n{ipaddr}",
     "max-length": 12,
     "on-click": "~/.config/waybar/scripts/wifi-menu.sh",
-    "on-click-right": "kitty -e nmtui"
+    "on-click-right": "kitty -e nmtui",
+    "format-disabled": "󰀝  avión",
+    "format-linked": "󰤮  sin IP",
+    "tooltip-format-disabled": "Modo avión / Wi-Fi apagado · clic para encender",
+    "tooltip-format-disconnected": "Sin conexión · clic para ver redes"
   },
   "battery": {
     "format": "{icon}  {capacity}%",
@@ -129,5 +133,10 @@
     "return-type": "json",
     "interval": 1,
     "on-click": "/home/mwvv/.local/bin/ciclar-perfil"
+  },
+  "custom/power": {
+    "format": "󰐥",
+    "tooltip-format": "Apagar, reiniciar, bloquear…",
+    "on-click": "powermenu"
   }
 }

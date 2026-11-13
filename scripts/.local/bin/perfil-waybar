@@ -1,0 +1,8 @@
+#!/bin/bash
+p=$(cat /sys/firmware/acpi/platform_profile)
+case "$p" in
+  low-power|quiet) c=power-saver;  i=$'\uf06c' ;;
+  performance)     c=performance;  i=$'\uf0e7' ;;
+  *)               c=balanced;     i=$'\uf24e' ;;
+esac
+printf '{"text":"%s","class":"%s","tooltip":"Perfil: %s"}\n' "$i" "$c" "$c"

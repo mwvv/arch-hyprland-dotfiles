@@ -10,10 +10,24 @@ if pgrep -x rofi >/dev/null; then pkill -x rofi; exit 0; fi
 notify() { notify-send -a "Wi-Fi" -i network-wireless "$1" "$2"; }
 
 radio=$(nmcli -t radio wifi)
+soft=$(rfkill list wlan | grep -c "Soft blocked: yes")
+hard=$(rfkill list wlan | grep -c "Hard blocked: yes")
 
-if [[ $radio != "enabled" ]]; then
-    choice=$(printf '󰖩  Encender Wi-Fi\n' | menu -p "Wi-Fi" -mesg "Wi-Fi apagado")
-    [[ $choice == *Encender* ]] && nmcli radio wifi on && notify "Wi-Fi encendido" ""
+# Bloqueo por hardware (tecla/interruptor físico): no se puede quitar por software.
+if (( hard > 0 )); then
+    printf '󰅖  Cerrar\n' | menu -p "Wi-Fi" -mesg "Modo avión por hardware: pulsa la tecla de modo avión del teclado (Fn)" >/dev/null
+    exit 0
+fi
+
+# Modo avión (rfkill) o Wi-Fi apagado: ofrecer encenderlo.
+if (( soft > 0 )) || [[ $radio != "enabled" ]]; then
+    msg="Wi-Fi apagado"; (( soft > 0 )) && msg="Modo avión activado"
+    choice=$(printf '󰖩  Encender Wi-Fi\n' | menu -p "Wi-Fi" -mesg "$msg")
+    if [[ $choice == *Encender* ]]; then
+        rfkill unblock wlan
+        nmcli radio wifi on
+        notify "Wi-Fi encendido" "Buscando redes…"
+    fi
     exit 0
 fi
 
@@ -30,7 +44,7 @@ networks=$(nmcli -t -f IN-USE,SIGNAL,SECURITY,SSID dev wifi list --rescan auto |
       printf "%s  %s %s%s\n", icon, lock, $4, mark
   }')
 
-options="󰑐  Buscar de nuevo\n󰖪  Apagar Wi-Fi\n${networks}"
+options="󰑐  Buscar de nuevo\n󰖪  Apagar Wi-Fi\n󰀝  Modo avión\n${networks}"
 mesg="Conectado a: ${current:-ninguna}"
 
 choice=$(printf "%b" "$options" | menu -p "Wi-Fi" -mesg "$mesg")
@@ -40,7 +54,9 @@ case "$choice" in
     *"Buscar de nuevo")
         nmcli dev wifi rescan 2>/dev/null; sleep 2; exec "$0" ;;
     *"Apagar Wi-Fi")
-        nmcli radio wifi off && notify "Wi-Fi apagado" ""; exit 0 ;;
+        nmcli radio wifi off && notify "Wi-Fi apagado" "Clic en el Wi-Fi de la barra para encenderlo"; exit 0 ;;
+    *"Modo avión")
+        rfkill block all && notify "Modo avión activado" "Clic en el Wi-Fi de la barra para desactivarlo"; exit 0 ;;
 esac
 
 # Extraer el SSID: quitar icono, candado y la marca ✓

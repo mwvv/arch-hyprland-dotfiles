@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""Cambia el tema de color del rice: neutro | catppuccin | calido.
+Sin argumentos abre un menú (rofi) para elegir."""
+import re, sys, subprocess
+from pathlib import Path
+
+D = Path.home() / "dotfiles"
+F = {
+    "hypr":   D / "hypr/.config/hypr/hyprland.lua",
+    "lock":   D / "hypr/.config/hypr/hyprlock.conf",
+    "css":    D / "waybar/.config/waybar/style.css",
+    "rasi":   D / "rofi/.config/rofi/colors.rasi",
+    "mako":   D / "mako/.config/mako/config",
+    "kitty":  D / "kitty/.config/kitty/kitty.conf",
+    "ff":     D / "fastfetch/.config/fastfetch/config.jsonc",
+}
+
+T = {
+ "neutro": dict(
+   name="Glass neutro",
+   border=("ffffff59", "ffffff1a"), inactive="ffffff12",
+   css=dict(glass="rgba(22, 22, 26, 0.39)", surface="rgba(255, 255, 255, 0.07)", hover="rgba(255, 255, 255, 0.12)",
+            active="rgba(255, 255, 255, 0.24)", line="rgba(255, 255, 255, 0.16)", fg="#f2f2f2",
+            dim="rgba(255, 255, 255, 0.50)", faint="rgba(255, 255, 255, 0.25)", warn="#f5d491", crit="#ff8a8a",
+            ok="#b5e8b0", hi="#ffffff", onact="#ffffff", tipbg="rgba(22, 22, 26, 0.85)", sep="rgba(255, 255, 255, 0.10)"),
+   rasi=dict(bg="#16161a52", surface="#ffffff12", fg="#f2f2f2", dim="#ffffff80", accent="#ffffff3d", onaccent="#ffffff", bordercol="#ffffff29"),
+   mako=dict(bg="#16161a59", fg="#f2f2f2", border="#ffffff33", low="#ffffff1a", crit="#ff8a8a"),
+   lock=dict(time="f2f2f2ff", date="ffffffb3", outer="ffffff40", inner="ffffff14", font="f2f2f2ff", check="e6e6e6ff", fail="ff8a8aff", ph="ffffff80"),
+   ff=dict(logo="white", keys="bright_white"),
+   kitty=dict(fg="#e8e8ea", bg="#121216", selfg="#121216", selbg="#d8d8de", cursor="#f2f2f2", url="#a8c8f0",
+              c=["#2a2a30","#e88a8a","#9fd4a0","#e8c98a","#8fb3e0","#c4a5e0","#8fd0d0","#c8c8ce",
+                 "#5c5c66","#f2a5a5","#b5e8b0","#f5d491","#a8c8f0","#d6bdf0","#a8e3e3","#f2f2f2"]),
+ ),
+ "catppuccin": dict(
+   name="Glass Catppuccin",
+   border=("b4befeee", "89b4faee"), inactive="45475aaa",
+   css=dict(glass="rgba(30, 30, 46, 0.39)", surface="rgba(205, 214, 244, 0.07)", hover="rgba(180, 190, 254, 0.15)",
+            active="rgba(180, 190, 254, 0.85)", line="rgba(180, 190, 254, 0.25)", fg="#cdd6f4",
+            dim="rgba(205, 214, 244, 0.55)", faint="rgba(205, 214, 244, 0.25)", warn="#f9e2af", crit="#f38ba8",
+            ok="#a6e3a1", hi="#b4befe", onact="#1e1e2e", tipbg="rgba(30, 30, 46, 0.90)", sep="rgba(205, 214, 244, 0.10)"),
+   rasi=dict(bg="#1e1e2e63", surface="#cdd6f412", fg="#cdd6f4", dim="#a6adc8", accent="#b4befe", onaccent="#1e1e2e", bordercol="#b4befe40"),
+   mako=dict(bg="#1e1e2e8c", fg="#cdd6f4", border="#b4befe", low="#45475a", crit="#f38ba8"),
+   lock=dict(time="cdd6f4ff", date="b4befeff", outer="b4befeee", inner="1e1e2e80", font="cdd6f4ff", check="89b4faff", fail="f38ba8ff", ph="6c7086"),
+   ff=dict(logo="38;2;180;190;254", keys="38;2;180;190;254"),
+   kitty=dict(fg="#cdd6f4", bg="#1e1e2e", selfg="#1e1e2e", selbg="#b4befe", cursor="#f5e0dc", url="#89b4fa",
+              c=["#45475a","#f38ba8","#a6e3a1","#f9e2af","#89b4fa","#f5c2e7","#94e2d5","#bac2de",
+                 "#585b70","#f38ba8","#a6e3a1","#f9e2af","#89b4fa","#f5c2e7","#94e2d5","#a6adc8"]),
+ ),
+ "calido": dict(
+   name="Glass cálido",
+   border=("f5a97fee", "8aadf4ee"), inactive="3a3230aa",
+   css=dict(glass="rgba(36, 30, 28, 0.39)", surface="rgba(236, 230, 226, 0.07)", hover="rgba(245, 169, 127, 0.15)",
+            active="rgba(245, 169, 127, 0.85)", line="rgba(245, 169, 127, 0.25)", fg="#ece6e2",
+            dim="rgba(236, 230, 226, 0.55)", faint="rgba(236, 230, 226, 0.25)", warn="#eed49f", crit="#ed8796",
+            ok="#a6da95", hi="#f5a97f", onact="#241e1c", tipbg="rgba(36, 30, 28, 0.90)", sep="rgba(236, 230, 226, 0.10)"),
+   rasi=dict(bg="#241e1c63", surface="#ece6e212", fg="#ece6e2", dim="#8a817c", accent="#f5a97f", onaccent="#241e1c", bordercol="#f5a97f40"),
+   mako=dict(bg="#241e1c8c", fg="#ece6e2", border="#f5a97f", low="#3a3230", crit="#ed8796"),
+   lock=dict(time="ece6e2ff", date="f5a97fff", outer="f5a97fee", inner="241e1c80", font="ece6e2ff", check="8aadf4ff", fail="ed8796ff", ph="8a817c"),
+   ff=dict(logo="38;2;245;169;127", keys="38;2;245;169;127"),
+   kitty=dict(fg="#ece6e2", bg="#1c1816", selfg="#1c1816", selbg="#f5a97f", cursor="#f5a97f", url="#8aadf4",
+              c=["#3a3230","#ed8796","#a6da95","#eed49f","#8aadf4","#c6a0f6","#8bd5ca","#d5ccc7",
+                 "#6b5f59","#f5a0ab","#b9e3ab","#f5e0b5","#a3bff7","#d4b5f8","#a5e0d7","#ece6e2"]),
+ ),
+}
+
+def sub(path, pattern, repl, count=1):
+    s = path.read_text()
+    new, n = re.subn(pattern, repl, s, count=count, flags=re.M)
+    if n == 0:
+        sys.exit(f"no encontré {pattern!r} en {path}")
+    path.write_text(new)
+
+def apply(t):
+    # Hyprland: bordes
+    sub(F["hypr"], r'active_border   = \{ colors = \{"rgba\([0-9a-f]+\)", "rgba\([0-9a-f]+\)"\}',
+        f'active_border   = {{ colors = {{"rgba({t["border"][0]})", "rgba({t["border"][1]})"}}')
+    sub(F["hypr"], r'inactive_border = "rgba\([0-9a-f]+\)"', f'inactive_border = "rgba({t["inactive"]})"')
+
+    # Waybar: variables
+    for k, v in t["css"].items():
+        sub(F["css"], rf'^@define-color {k}( +).*;$', rf'@define-color {k}\g<1>{v};')
+    sub(F["css"], r'^/\* Waybar — .*? \(', f'/* Waybar — {t["name"]} (')
+
+    # Rofi: variables
+    for k, v in t["rasi"].items():
+        sub(F["rasi"], rf'^    {k}:( +)#[0-9a-f]+;$', rf'    {k}:\g<1>{v};')
+    sub(F["rasi"], r'^/\* Colores compartidos de rofi — .*? \*/', f'/* Colores compartidos de rofi — {t["name"]} */')
+
+    # Mako
+    m = t["mako"]
+    F["mako"].write_text(f"""# Notificaciones — {t['name']}
+font=JetBrainsMono Nerd Font 10
+background-color={m['bg']}
+text-color={m['fg']}
+border-color={m['border']}
+border-size=1
+border-radius=12
+padding=12
+margin=10
+width=350
+default-timeout=5000
+anchor=top-right
+
+[urgency=low]
+border-color={m['low']}
+
+[urgency=critical]
+border-color={m['crit']}
+default-timeout=0
+""")
+
+    # Hyprlock
+    l = t["lock"]
+    sub(F["lock"], r'^# Pantalla de bloqueo — .*$', f'# Pantalla de bloqueo — {t["name"]}')
+    sub(F["lock"], r'(text = \$TIME\n    color = rgba\()[0-9a-f]+', rf'\g<1>{l["time"]}')
+    sub(F["lock"], r'(date \+"%A, %d %B"\n    color = rgba\()[0-9a-f]+', rf'\g<1>{l["date"]}')
+    for key in ("outer", "inner", "font", "check", "fail"):
+        sub(F["lock"], rf'^(    {key}_color = rgba\()[0-9a-f]+', rf'\g<1>{l[key]}')
+    sub(F["lock"], r'foreground="##[0-9a-f]+"', f'foreground="##{l["ph"]}"')
+
+    # Kitty: bloque de colores desde "# Tema" hasta el final
+    k = t["kitty"]; c = k["c"]
+    names = ["negro", "rojo", "verde", "amarillo", "azul", "magenta", "cian", "blanco"]
+    pal = "\n".join(f"# {n}\ncolor{i:<2} {c[i]}\ncolor{i+8:<2} {c[i+8]}" for i, n in enumerate(names))
+    s = F["kitty"].read_text()
+    s = s[:s.index("# Tema")] + f"""# Tema {t['name']}
+foreground            {k['fg']}
+background            {k['bg']}
+selection_foreground  {k['selfg']}
+selection_background  {k['selbg']}
+cursor                {k['cursor']}
+cursor_text_color     {k['bg']}
+url_color             {k['url']}
+
+{pal}
+"""
+    F["kitty"].write_text(s)
+
+    # Fastfetch
+    f = t["ff"]
+    sub(F["ff"], r'"color": \{ "1": "[^"]*", "2": "[^"]*", "3": "[^"]*" \}',
+        f'"color": {{ "1": "{f["logo"]}", "2": "{f["logo"]}", "3": "{f["logo"]}" }}')
+    sub(F["ff"], r'"color": \{ "keys": "[^"]*", "title": "[^"]*" \}',
+        f'"color": {{ "keys": "{f["keys"]}", "title": "{f["keys"]}" }}')
+
+def reload():
+    for cmd in (["hyprctl", "reload"], ["killall", "-SIGUSR2", "waybar"], ["makoctl", "reload"]):
+        subprocess.run(cmd, capture_output=True)
+    pids = subprocess.run(["pgrep", "-x", "kitty"], capture_output=True, text=True).stdout.split()
+    for p in pids:
+        subprocess.run(["kill", "-SIGUSR1", p])
+
+if __name__ == "__main__":
+    name = sys.argv[1] if len(sys.argv) > 1 else ""
+    if not name:
+        labels = {T[k]["name"]: k for k in T}
+        r = subprocess.run(["rofi", "-dmenu", "-i", "-no-custom", "-p", "Tema",
+                            "-theme", str(Path.home() / ".config/rofi/launcher.rasi"),
+                            "-theme-str", "listview { lines: 3; } entry { placeholder: \"\"; }"],
+                           input="\n".join(labels), capture_output=True, text=True)
+        name = labels.get(r.stdout.strip(), "")
+        if not name:
+            sys.exit(0)
+    if name not in T:
+        sys.exit(f"uso: theme.py [{' | '.join(T)}]")
+    apply(T[name]); reload()
+    print(f"tema aplicado: {T[name]['name']}")
+    subprocess.run(["notify-send", "-a", "Tema", "Tema aplicado", T[name]["name"]])

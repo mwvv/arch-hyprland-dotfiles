@@ -1,13 +1,8 @@
-/* Menú de wifi — Glass neutro, anclado bajo el módulo de red */
+/* Menú de wifi — anclado bajo el módulo de red (colores en ~/.config/rofi/colors.rasi) */
+@import "~/.config/rofi/colors.rasi"
+
 * {
     font:             "Inter 11";
-    bg:               #16161a52;
-    surface:          #ffffff12;
-    fg:               #f2f2f2;
-    dim:              #ffffff80;
-    accent:           #ffffff3d;
-    onaccent:         #ffffff;
-    bordercol:        #ffffff29;
 
     background-color: transparent;
     text-color:       @fg;

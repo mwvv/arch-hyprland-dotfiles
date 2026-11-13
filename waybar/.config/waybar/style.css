@@ -86,7 +86,9 @@ tooltip label { color: @fg; }
 #tray { padding-right: 12px; }
 
 #pulseaudio.muted,
-#network.disconnected { color: @dim; }
+#network.disconnected,
+#network.disabled,
+#network.linked { color: @dim; }
 
 #battery.charging, #battery.plugged { color: @hi; }
 #battery.warning:not(.charging)     { color: @warn; }
@@ -97,3 +99,11 @@ tooltip label { color: @fg; }
 #custom-perfil.power-saver { color: @ok; }
 #custom-perfil.balanced    { color: @dim; }
 #custom-perfil.performance { color: @warn; }
+
+/* Botón de apagado */
+#custom-power {
+  padding: 0 14px 0 10px;
+  color: @fg;
+  border-left: 1px solid @sep;
+}
+#custom-power:hover { color: @crit; }

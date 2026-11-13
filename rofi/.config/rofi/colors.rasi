@@ -1,0 +1,10 @@
+/* Colores compartidos de rofi — Glass neutro */
+* {
+    bg:               #16161a52;
+    surface:          #ffffff12;
+    fg:               #f2f2f2;
+    dim:              #ffffff80;
+    accent:           #ffffff3d;
+    onaccent:         #ffffff;
+    bordercol:        #ffffff29;
+}

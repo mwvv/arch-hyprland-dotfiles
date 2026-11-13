@@ -1,0 +1,53 @@
+/* Menú de apagado — fila de botones glass, centrado */
+@import "~/.config/rofi/colors.rasi"
+
+* {
+    font:             "Inter 11";
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+window {
+    location:         center;
+    anchor:           center;
+    width:            620px;
+    background-color: @bg;
+    border:           1px solid;
+    border-color:     @bordercol;
+    border-radius:    16px;
+}
+
+mainbox {
+    padding:  18px;
+    spacing:  14px;
+    children: [ message, listview ];
+}
+
+message  { padding: 0 4px; }
+textbox  { text-color: @dim; horizontal-align: 0.5; }
+
+listview {
+    columns:      5;
+    lines:        1;
+    spacing:      12px;
+    fixed-height: true;
+    fixed-columns: true;
+    scrollbar:    false;
+    layout:       vertical;
+}
+
+element {
+    orientation:      vertical;
+    padding:          12px 0;
+    border-radius:    12px;
+    background-color: @surface;
+}
+element-text {
+    horizontal-align: 0.5;
+    font:             "Inter, Symbols Nerd Font 11";
+}
+element selected.normal {
+    background-color: @accent;
+    text-color:       @onaccent;
+}
+element-text selected { text-color: inherit; }

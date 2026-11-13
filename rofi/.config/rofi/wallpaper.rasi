@@ -1,0 +1,64 @@
+/* Selector de fondos — cuadrícula de miniaturas glass */
+@import "~/.config/rofi/colors.rasi"
+
+* {
+    font:             "Inter 11";
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+window {
+    location:         center;
+    anchor:           center;
+    width:            720px;
+    background-color: @bg;
+    border:           1px solid;
+    border-color:     @bordercol;
+    border-radius:    16px;
+}
+
+mainbox {
+    padding:  16px;
+    spacing:  12px;
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    padding:          10px 14px;
+    background-color: @surface;
+    border-radius:    9px;
+    spacing:          12px;
+    children:         [ prompt, entry ];
+}
+prompt { text-color: @fg; font: "Inter SemiBold 11"; }
+entry  { placeholder: "Buscar fondo…"; placeholder-color: @dim; }
+
+listview {
+    columns:      3;
+    lines:        2;
+    spacing:      12px;
+    fixed-height: false;
+    scrollbar:    false;
+    flow:         horizontal;
+}
+
+element {
+    orientation:      vertical;
+    padding:          8px;
+    spacing:          8px;
+    border-radius:    12px;
+    background-color: @surface;
+}
+element-icon {
+    size:          190px;
+    border-radius: 8px;
+}
+element-text {
+    horizontal-align: 0.5;
+    font:             "Inter, Symbols Nerd Font 10";
+}
+element selected.normal {
+    background-color: @accent;
+    text-color:       @onaccent;
+}
+element-text selected { text-color: inherit; }

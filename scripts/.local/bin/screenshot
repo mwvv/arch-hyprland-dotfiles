@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Captura de un área: copia al portapapeles, guarda en ~/Pictures/Screenshots
+# y avisa con miniatura. Clic en la notificación → editar con satty.
+dir="$HOME/Pictures/Screenshots"; mkdir -p "$dir"
+file="$dir/$(date +%F_%H-%M-%S).png"
+
+geom=$(slurp -b '#00000066' -c '#ffffffcc' -w 1) || exit 0
+grim -g "$geom" "$file" || exit 1
+wl-copy < "$file"
+
+if [[ $1 == "--edit" ]]; then
+  exec satty --filename "$file" --output-filename "$file" --copy-command wl-copy --early-exit
+fi
+
+action=$(notify-send -a "Captura" -i "$file" -A "default=Editar" \
+           "Captura copiada" "Clic para editar · $(basename "$file")")
+[[ $action == default ]] && satty --filename "$file" --output-filename "$file" --copy-command wl-copy --early-exit

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Selector de fondo de pantalla con miniaturas (rofi + hyprpaper).
+# Los fondos viven en ~/.config/hypr/wallpapers (dentro de tus dotfiles).
+pgrep -x rofi >/dev/null && { pkill -x rofi; exit 0; }
+
+DIR="$HOME/.config/hypr/wallpapers"
+CONF="$HOME/.config/hypr/hyprpaper.conf"
+LOCK="$HOME/.config/hypr/hyprlock.conf"
+OPEN="󰉋  Abrir carpeta de fondos"
+
+current=$(hyprctl hyprpaper listactive | head -1 | sed 's/^[^:]*: //')
+
+list() {
+  find -L "$DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) |
+    sort | while read -r f; do
+      name=$(basename "${f%.*}")
+      [[ $(realpath "$f") == $(realpath "$current" 2>/dev/null) ]] && name="$name  ✓"
+      printf '%s\0icon\x1f%s\n' "$name" "$f"
+    done
+  printf '%s\0icon\x1ffolder-pictures\n' "$OPEN"
+}
+
+n=$(( $(find -L "$DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | wc -l) + 1 ))
+rows=$(( (n + 2) / 3 )); (( rows > 2 )) && rows=2
+cols=$(( n < 3 ? n : 3 ))
+
+choice=$(list | rofi -dmenu -i -no-custom -p "Fondo" -show-icons \
+           -theme ~/.config/rofi/wallpaper.rasi \
+           -theme-str "listview { lines: $rows; columns: $cols; }")
+[[ -z $choice ]] && exit 0
+
+if [[ $choice == "$OPEN" ]]; then
+  xdg-open "$DIR" >/dev/null 2>&1 & exit 0
+fi
+
+name=${choice%  ✓}
+file=$(find -L "$DIR" -maxdepth 1 -type f -name "$name.*" | head -1)
+[[ -f $file ]] || exit 1
+rel="~/.config/hypr/wallpapers/$(basename "$file")"
+
+# Aplicar en vivo en todos los monitores
+for mon in $(hyprctl monitors -j | python3 -c 'import json,sys;[print(m["name"]) for m in json.load(sys.stdin)]'); do
+  hyprctl hyprpaper wallpaper "$mon,$file,cover" >/dev/null
+done
+
+# Guardarlo para el próximo inicio y para la pantalla de bloqueo
+sed -i "s|^\(\s*path = \).*|\1$rel|" "$CONF"
+sed -i "0,/^\(\s*path = \).*/s||\1$rel|" "$LOCK"
+
+notify-send -a "Fondo" -i "$file" "Fondo cambiado" "$(basename "$file")"

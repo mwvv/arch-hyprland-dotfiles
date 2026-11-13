@@ -1,0 +1,12 @@
+configuration {
+    modi:                "drun,run";
+    show-icons:          true;
+    icon-theme:          "Papirus-Dark";
+    drun-display-format: "{name}";
+    display-drun:        "Apps";
+    display-run:         "Run";
+    matching:            "fuzzy";
+    sort:                true;
+    sorting-method:      "fzf";
+}
+@theme "~/.config/rofi/launcher.rasi"

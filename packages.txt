@@ -1,0 +1,49 @@
+# Paquetes del rice (repos oficiales de Arch). Lo usa install.sh.
+# Hyprland y su ecosistema
+hyprland
+hyprpaper
+hyprlock
+hypridle
+hyprpolkitagent
+hyprshutdown
+hyprsunset
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+# Barra, menús, notificaciones
+waybar
+rofi
+mako
+libnotify
+swayosd
+# Terminal y herramientas
+kitty
+fastfetch
+btop
+stow
+python
+# Capturas y portapapeles
+grim
+slurp
+satty
+wl-clipboard
+cliphist
+# Audio, brillo, red, energía
+pipewire
+wireplumber
+pavucontrol
+playerctl
+brightnessctl
+networkmanager
+power-profiles-daemon
+# Apps
+dolphin
+# Fuentes
+inter-font
+ttf-jetbrains-mono-nerd
+ttf-nerd-fonts-symbols
+# Apariencia
+papirus-icon-theme
+capitaine-cursors
+adw-gtk-theme
+nwg-look
+qt6ct

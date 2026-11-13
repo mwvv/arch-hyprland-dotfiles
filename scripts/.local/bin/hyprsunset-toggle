@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Alterna la luz nocturna a mano (clic derecho en el reloj de Waybar).
+cur=$(hyprctl hyprsunset temperature 2>/dev/null | tr -dc '0-9')
+if [[ -n $cur && $cur -lt 6000 ]]; then
+  hyprctl hyprsunset identity >/dev/null && notify-send -a "Luz nocturna" "Luz nocturna apagada" ""
+else
+  hyprctl hyprsunset temperature 4500 >/dev/null && notify-send -a "Luz nocturna" "Luz nocturna encendida" "4500 K"
+fi

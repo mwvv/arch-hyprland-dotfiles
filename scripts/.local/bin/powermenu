@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Menú de apagado (rofi). Segundo clic/atajo lo cierra.
+pgrep -x rofi >/dev/null && { pkill -x rofi; exit 0; }
+
+up=$(uptime -p | sed 's/^up //; s/ hours\?/h/; s/ minutes\?/m/; s/,//g')
+ic() { printf "<span font='Symbols Nerd Font 22'>%s</span>\n%s" "$1" "$2"; }
+choice=$(printf '%s|%s|%s|%s|%s' "$(ic 󰌾 Bloquear)" "$(ic 󰒲 Suspender)" "$(ic 󰍃 Salir)" "$(ic 󰜉 Reiniciar)" "$(ic 󰐥 Apagar)" |
+  rofi -dmenu -sep '|' -eh 3 -i -no-custom -markup-rows -selected-row 0 \
+       -theme ~/.config/rofi/powermenu.rasi -mesg "Encendido hace $up" -p "")
+
+case "$choice" in
+  *Bloquear)  loginctl lock-session ;;
+  *Suspender) loginctl lock-session; sleep 0.5; systemctl suspend ;;
+  *Salir)     hyprshutdown -t "Cerrando sesión…" ;;
+  *Reiniciar) hyprshutdown -t "Reiniciando…" -p "systemctl reboot" ;;
+  *Apagar)    hyprshutdown -t "Apagando…" -p "systemctl poweroff" ;;
+esac
