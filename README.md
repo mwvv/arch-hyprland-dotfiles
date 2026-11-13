@@ -34,7 +34,7 @@ El script instala los paquetes de `packages.txt`, respalda tus configs actuales 
 | `SUPER + L` | Bloquear pantalla |
 | `SUPER + M` | Menú de apagado |
 | `SUPER + SHIFT + T` | Cambiar tema de color (neutro / Catppuccin / cálido) |
-| `SUPER + W` | Cambiar fondo de pantalla (fondos en `hypr/.config/hypr/wallpapers/`) |
+| `SUPER + W` | Cambiar fondo de pantalla (tus imágenes en `~/Pictures/Wallpapers`) |
 
 ## Waybar
 
@@ -50,9 +50,11 @@ El script instala los paquetes de `packages.txt`, respalda tus configs actuales 
 Cada carpeta es un paquete de `stow` que replica la ruta desde `~`:
 
 ```
-hypr/      → ~/.config/hypr      (Hyprland, hyprlock, hypridle, hyprpaper, hyprsunset, fondo)
+hypr/      → ~/.config/hypr      (Hyprland, hyprlock, hypridle, hyprpaper, hyprsunset)
 waybar/    → ~/.config/waybar    (barra + menú de wifi)
 rofi/      → ~/.config/rofi      (lanzador, menú de apagado, colores compartidos)
 kitty/  mako/  swayosd/  fastfetch/  btop/  gtk/  qt/
 scripts/   → ~/.local/bin        (powermenu, clipboard-menu, screenshot, rice-theme…)
 ```
+
+Los fondos de pantalla no van en el repo: ponlos en `~/Pictures/Wallpapers`.

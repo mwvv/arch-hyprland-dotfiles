@@ -32,7 +32,15 @@ say "Enlazando configs con stow"
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
 stow -d "$DOTS" -t "$HOME" --restow "${PKGS[@]}"
 
-# 4. Apariencia GTK
+# 4. Fondos de pantalla (personales, fuera del repo)
+mkdir -p "$HOME/Pictures/Wallpapers" "$HOME/.local/state"
+if [[ ! -e $HOME/.local/state/current-wallpaper ]]; then
+  first=$(find "$HOME/Pictures/Wallpapers" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.png' -o -iname '*.webp' \) | head -1)
+  ln -sfn "${first:-/usr/share/hypr/wall2.png}" "$HOME/.local/state/current-wallpaper"
+  say "Fondo: pon tus imágenes en ~/Pictures/Wallpapers y elige con SUPER+W"
+fi
+
+# 5. Apariencia GTK
 say "Aplicando tema oscuro, íconos y cursor"
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 gsettings set org.gnome.desktop.interface gtk-theme adw-gtk3-dark
@@ -43,7 +51,7 @@ gsettings set org.gnome.desktop.interface font-name 'Inter 11'
 # Dolphin (KDE) no toma el esquema de colores por sí solo
 kwriteconfig6 --file dolphinrc --group UiSettings --key ColorScheme GlassNeutro 2>/dev/null || true
 
-# 5. Servicios
+# 6. Servicios
 sudo systemctl enable --now NetworkManager power-profiles-daemon >/dev/null 2>&1 || true
 
 say "Listo. Cierra sesión y entra a Hyprland."

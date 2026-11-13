@@ -1,0 +1,5 @@
+# Fondos de pantalla: son personales, viven en ~/Pictures/Wallpapers
+*.jpg
+*.jpeg
+*.png
+*.webp

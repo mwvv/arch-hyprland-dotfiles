@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 # Selector de fondo de pantalla con miniaturas (rofi + hyprpaper).
-# Los fondos viven en ~/.config/hypr/wallpapers (dentro de tus dotfiles).
+# Los fondos son personales: viven en ~/Pictures/Wallpapers (fuera del repo).
+# El elegido queda enlazado en ~/.local/state/current-wallpaper, que es lo que
+# leen hyprpaper.conf y hyprlock.conf, así que cambiar de fondo no toca el repo.
 pgrep -x rofi >/dev/null && { pkill -x rofi; exit 0; }
 
-DIR="$HOME/.config/hypr/wallpapers"
-CONF="$HOME/.config/hypr/hyprpaper.conf"
-LOCK="$HOME/.config/hypr/hyprlock.conf"
+DIR="$HOME/Pictures/Wallpapers"
+CURRENT="$HOME/.local/state/current-wallpaper"
+mkdir -p "$DIR" "$(dirname "$CURRENT")"
 OPEN="󰉋  Abrir carpeta de fondos"
 
-current=$(hyprctl hyprpaper listactive | head -1 | sed 's/^[^:]*: //')
+current=$(readlink -f "$CURRENT" 2>/dev/null)
 
 list() {
   find -L "$DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) |
     sort | while read -r f; do
       name=$(basename "${f%.*}")
-      [[ $(realpath "$f") == $(realpath "$current" 2>/dev/null) ]] && name="$name  ✓"
+      [[ $(realpath "$f") == "$current" ]] && name="$name  ✓"
       printf '%s\0icon\x1f%s\n' "$name" "$f"
     done
   printf '%s\0icon\x1ffolder-pictures\n' "$OPEN"
@@ -36,7 +38,6 @@ fi
 name=${choice%  ✓}
 file=$(find -L "$DIR" -maxdepth 1 -type f -name "$name.*" | head -1)
 [[ -f $file ]] || exit 1
-rel="~/.config/hypr/wallpapers/$(basename "$file")"
 
 # Aplicar en vivo en todos los monitores
 for mon in $(hyprctl monitors -j | python3 -c 'import json,sys;[print(m["name"]) for m in json.load(sys.stdin)]'); do
@@ -44,7 +45,6 @@ for mon in $(hyprctl monitors -j | python3 -c 'import json,sys;[print(m["name"])
 done
 
 # Guardarlo para el próximo inicio y para la pantalla de bloqueo
-sed -i "s|^\(\s*path = \).*|\1$rel|" "$CONF"
-sed -i "0,/^\(\s*path = \).*/s||\1$rel|" "$LOCK"
+ln -sfn "$file" "$CURRENT"
 
 notify-send -a "Fondo" -i "$file" "Fondo cambiado" "$(basename "$file")"
