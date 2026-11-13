@@ -1,0 +1,44 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 30,
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "pulseaudio", "network", "custom/perfil", "battery", "tray"],
+  "clock": {
+    "format": "{:%H:%M  %a %d/%m}"
+  },
+  "cpu": {
+    "format": "\uf2db {usage}%"
+  },
+  "memory": {
+    "format": "\uf538 {percentage}%"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "\uf026 mute",
+    "format-icons": { "default": ["\uf027", "\uf028"] },
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+  "network": {
+    "format-wifi": "\uf1eb {signalStrength}%",
+    "format-disconnected": "\uf071 sin red",
+    "on-click": "kitty -e nmtui"
+  },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "\uf0e7 {capacity}%",
+    "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"],
+    "states": { "warning": 30, "critical": 15 }
+  },
+  "custom/perfil": {
+    "exec": "/home/mwvv/.local/bin/perfil-waybar",
+    "return-type": "json",
+    "interval": 1,
+    "on-click": "/home/mwvv/.local/bin/ciclar-perfil"
+}
+ 
+}
+}
+
+}
