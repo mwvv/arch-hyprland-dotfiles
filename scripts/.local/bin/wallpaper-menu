@@ -47,4 +47,3 @@ done
 # Guardarlo para el próximo inicio y para la pantalla de bloqueo
 ln -sfn "$file" "$CURRENT"
 
-notify-send -a "Fondo" -i "$file" "Fondo cambiado" "$(basename "$file")"

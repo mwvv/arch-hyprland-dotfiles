@@ -73,7 +73,7 @@ tooltip label { color: @fg; }
 }
 
 /* ---------- Derecha ---------- */
-#custom-perfil, #cpu, #memory, #pulseaudio, #network, #bluetooth, #battery, #tray {
+#custom-perfil, #cpu, #memory, #pulseaudio, #network, #bluetooth, #battery {
   padding: 0 8px;
   color: @fg;
 }
@@ -83,7 +83,7 @@ tooltip label { color: @fg; }
   border-left: 1px solid @sep;
 }
 
-#tray { padding-right: 12px; }
+#tray { padding: 0; }   /* sin relleno: si está vacía no ocupa espacio */
 
 #pulseaudio.muted,
 #network.disconnected,
@@ -130,3 +130,4 @@ tooltip label { color: @fg; }
 /* Bluetooth: solo ícono */
 #bluetooth.off, #bluetooth.disabled { color: @faint; }
 #bluetooth.connected { color: #ffffff; }
+

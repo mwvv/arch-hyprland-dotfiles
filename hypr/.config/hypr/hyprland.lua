@@ -55,7 +55,7 @@ local menu        = "rofi -show drun"
 --   hl.exec_cmd("waybar & hyprpaper & firefox")
 -- end)
 hl.on("hyprland.start", function ()
-  hl.exec_cmd("waybar")
+  hl.exec_cmd("sh -c 'while true; do waybar; sleep 1; done'")   -- si Waybar se cae, vuelve sola
   hl.exec_cmd("hyprpaper")
   hl.exec_cmd("mako")
   hl.exec_cmd("hypridle")
@@ -441,4 +441,12 @@ hl.window_rule({
     match = { title = "^(Open File|Save File|Open Folder|Abrir archivo|Guardar archivo|Seleccionar.*)$" },
     float = true,
     center = true,
+})
+
+-- Scroll más rápido en la terminal (touchpad y rueda); el resto de apps queda igual
+hl.window_rule({
+    name  = "kitty-fast-scroll",
+    match = { class = "^kitty$" },
+    scroll_touchpad = 3,
+    scroll_mouse    = 3,
 })
