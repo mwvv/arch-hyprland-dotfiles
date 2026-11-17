@@ -297,6 +297,8 @@ hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))      -- lock screen
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("screenshot"))                -- captura → portapapeles + aviso
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("screenshot --edit"))         -- captura → editar con satty
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("screenrec"))                 -- grabar un área (repetir para parar)
+hl.bind(mainMod .. " + ALT + R", hl.dsp.exec_cmd("screenrec --full"))            -- grabar pantalla completa
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("rice-theme"))                -- elegir tema de color
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("wallpaper-menu"))                    -- cambiar fondo de pantalla
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("minimize"))                          -- minimizar ventana

@@ -31,10 +31,13 @@ if (( soft > 0 )) || [[ $radio != "enabled" ]]; then
     exit 0
 fi
 
-current=$(nmcli -t -f ACTIVE,SSID dev wifi | awk -F: '$1=="yes"{print $2; exit}')
+current=$(nmcli -t -f ACTIVE,SSID dev wifi list --rescan no | awk -F: '$1=="yes"{print $2; exit}')
+
+# Escanear en segundo plano para la próxima vez (no bloquea el menú)
+(nmcli dev wifi rescan >/dev/null 2>&1 &)
 
 # Lista de redes: icono de señal, candado si es segura, marca si es la actual.
-networks=$(nmcli -t -f IN-USE,SIGNAL,SECURITY,SSID dev wifi list --rescan auto | sort -t: -k1,1r -k2,2nr |
+networks=$(nmcli -t -f IN-USE,SIGNAL,SECURITY,SSID dev wifi list --rescan no | sort -t: -k1,1r -k2,2nr |
   awk -F: '$4 != "" && !seen[$4]++ {
       s=$2+0
       if      (s>=75) icon="󰤨"; else if (s>=50) icon="󰤥";
@@ -52,7 +55,8 @@ choice=$(printf "%b" "$options" | menu -p "Wi-Fi" -mesg "$mesg")
 
 case "$choice" in
     *"Buscar de nuevo")
-        nmcli dev wifi rescan 2>/dev/null; sleep 2; exec "$0" ;;
+        notify "Buscando redes…" ""
+        nmcli dev wifi list --rescan yes >/dev/null 2>&1; exec "$0" ;;
     *"Apagar Wi-Fi")
         nmcli radio wifi off && notify "Wi-Fi apagado" "Clic en el Wi-Fi de la barra para encenderlo"; exit 0 ;;
     *"Modo avión")

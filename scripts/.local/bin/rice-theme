@@ -138,8 +138,7 @@ url_color             {k['url']}
 
     # Fastfetch
     f = t["ff"]
-    sub(F["ff"], r'"color": \{ "1": "[^"]*", "2": "[^"]*", "3": "[^"]*" \}',
-        f'"color": {{ "1": "{f["logo"]}", "2": "{f["logo"]}", "3": "{f["logo"]}" }}')
+    # (el logo de fastfetch mantiene su color propio: rojo SCP)
     sub(F["ff"], r'"color": \{ "keys": "[^"]*", "title": "[^"]*" \}',
         f'"color": {{ "keys": "{f["keys"]}", "title": "{f["keys"]}" }}')
 

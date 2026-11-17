@@ -25,6 +25,7 @@ python
 grim
 slurp
 satty
+wf-recorder
 wl-clipboard
 cliphist
 # Audio, brillo, red, energía
@@ -37,6 +38,7 @@ networkmanager
 power-profiles-daemon
 # Apps
 dolphin
+celluloid
 # Fuentes
 inter-font
 ttf-jetbrains-mono-nerd

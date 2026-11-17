@@ -33,6 +33,8 @@ El script instala los paquetes de `packages.txt`, respalda tus configs actuales 
 | `SUPER + V` | Historial del portapapeles |
 | `SUPER + SHIFT + S` | Captura de un área (copia + aviso, clic para editar) |
 | `SUPER + SHIFT + A` | Captura y editar con Satty |
+| `SUPER + SHIFT + R` | Grabar un área de la pantalla (otra vez para detener) |
+| `SUPER + ALT + R` | Grabar la pantalla completa |
 | `SUPER + L` | Bloquear pantalla |
 | `SUPER + M` | Menú de apagado |
 | `SUPER + SHIFT + T` | Cambiar tema de color (neutro / Catppuccin / cálido) |

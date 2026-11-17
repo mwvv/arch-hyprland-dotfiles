@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Grabación de pantalla con wf-recorder (con audio del sistema).
+#   screenrec            → elegir un área con el mouse y grabar
+#   screenrec --full     → grabar la pantalla completa
+#   screenrec --status   → JSON para el indicador de Waybar
+# Si ya está grabando, cualquier llamada (salvo --status) detiene la grabación.
+DIR="$HOME/Videos/Recordings"
+STATE="${XDG_RUNTIME_DIR:-/tmp}/screenrec"   # guarda: inicio<TAB>archivo
+mkdir -p "$DIR"
+
+recording() { pgrep -x wf-recorder >/dev/null; }
+
+if ! command -v wf-recorder >/dev/null && [[ $1 != --status ]]; then
+  notify-send -a "Grabación" -u critical "No se puede grabar" "Falta wf-recorder: sudo pacman -S wf-recorder"
+  exit 1
+fi
+
+if [[ $1 == --status ]]; then
+  if recording && [[ -f $STATE ]]; then
+    start=$(cut -f1 "$STATE"); s=$(( $(date +%s) - start ))
+    printf '{"text":"●  %02d:%02d","tooltip":"Grabando · clic para detener","class":"recording"}\n' $((s/60)) $((s%60))
+  else
+    echo '{"text":"","class":"idle"}'
+  fi
+  exit 0
+fi
+
+# Detener si ya está grabando
+if recording; then
+  pkill -INT -x wf-recorder
+  for _ in $(seq 1 50); do recording || break; sleep 0.1; done
+  file=$(cut -f2 "$STATE" 2>/dev/null); rm -f "$STATE"
+  pkill -RTMIN+9 waybar
+  action=$(notify-send -a "Grabación" -i video-x-generic -A "default=Ver" \
+             "Grabación guardada" "Clic para verla · $(basename "$file")")
+  [[ $action == default ]] && xdg-open "$file" >/dev/null 2>&1 &
+  exit 0
+fi
+
+file="$DIR/$(date +%F_%H-%M-%S).mp4"
+args=(-f "$file" -c libx264 -p preset=veryfast -p crf=23)
+
+monitor="$(pactl get-default-sink 2>/dev/null).monitor"
+[[ $monitor != ".monitor" ]] && args+=(--audio="$monitor")
+
+if [[ $1 != --full ]]; then
+  geom=$(slurp -b '#00000066' -c '#ffffffcc' -w 1) || exit 0
+  args+=(-g "$geom")
+fi
+
+printf '%s\t%s\n' "$(date +%s)" "$file" > "$STATE"
+log="${XDG_RUNTIME_DIR:-/tmp}/screenrec.log"
+setsid wf-recorder "${args[@]}" >"$log" 2>&1 &
+sleep 1
+if ! recording; then   # se cerró al instante: mostrar el error
+  rm -f "$STATE"
+  notify-send -a "Grabación" -u critical "La grabación falló" "$(tail -n 3 "$log")"
+  exit 1
+fi
+pkill -RTMIN+9 waybar
+notify-send -a "Grabación" -t 1500 "Grabando…" "Repite el atajo para detener"

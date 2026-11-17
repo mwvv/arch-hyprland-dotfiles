@@ -125,3 +125,4 @@ tooltip label { color: @fg; }
   border-radius: 7px;
 }
 #custom-minimized:hover { background: @hover; }
+
