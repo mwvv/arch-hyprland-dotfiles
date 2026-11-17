@@ -57,6 +57,6 @@ for m in video/mp4 video/x-matroska video/webm video/quicktime video/x-msvideo v
 done
 
 # 6. Servicios
-sudo systemctl enable --now NetworkManager power-profiles-daemon >/dev/null 2>&1 || true
+sudo systemctl enable --now NetworkManager power-profiles-daemon bluetooth >/dev/null 2>&1 || true
 
 say "Listo. Cierra sesión y entra a Hyprland."

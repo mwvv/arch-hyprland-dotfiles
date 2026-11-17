@@ -35,6 +35,8 @@ pavucontrol
 playerctl
 brightnessctl
 networkmanager
+bluez
+bluez-utils
 power-profiles-daemon
 # Apps
 dolphin

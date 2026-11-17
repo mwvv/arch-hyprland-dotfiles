@@ -43,6 +43,7 @@ El script instala los paquetes de `packages.txt`, respalda tus configs actuales 
 ## Waybar
 
 - **Wifi:** clic → menú de redes · clic derecho → `nmtui`
+- **Bluetooth:** clic → menú de dispositivos · clic derecho → encender/apagar
 - **Volumen:** clic → silenciar · clic derecho → `pavucontrol` · rueda → subir/bajar
 - **Brillo:** rueda → subir/bajar
 - **Reloj:** pasar el mouse → calendario · clic → fecha completa · clic derecho → luz nocturna

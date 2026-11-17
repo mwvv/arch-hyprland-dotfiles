@@ -21,6 +21,7 @@
     "memory",
     "pulseaudio",
     "network",
+    "bluetooth",
     "battery",
     "tray",
     "custom/power"
@@ -144,5 +145,19 @@
     "on-click": "playerctl play-pause",
     "on-click-right": "playerctl next",
     "on-click-middle": "playerctl previous"
+  },
+  "bluetooth": {
+    "format": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "tooltip-format": "Bluetooth encendido · nada conectado\nclic: dispositivos",
+    "tooltip-format-off": "Bluetooth apagado · clic para encender",
+    "tooltip-format-disabled": "Bluetooth apagado · clic para encender",
+    "tooltip-format-connected": "{device_enumerate}\nclic: dispositivos",
+    "tooltip-format-enumerate-connected": "{device_alias}",
+    "tooltip-format-enumerate-connected-battery": "{device_alias} · {device_battery_percentage}%",
+    "on-click": "bluetooth-menu",
+    "on-click-right": "rfkill toggle bluetooth"
   }
 }

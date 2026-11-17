@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Menú de Bluetooth para Waybar (rofi + bluetoothctl), mismo estilo que el del wifi.
+THEME="$HOME/.config/waybar/scripts/wifi.rasi"
+menu() { rofi -dmenu -i -no-custom -theme "$THEME" -theme-str 'entry { placeholder: "Buscar dispositivo…"; }' "$@"; }
+notify() { notify-send -a "Bluetooth" -i bluetooth "$1" "$2"; }
+bt() { timeout 10 bluetoothctl "$@" 2>/dev/null; }
+
+pgrep -x rofi >/dev/null && { pkill -x rofi; exit 0; }
+
+if ! systemctl is-active --quiet bluetooth; then
+  notify "Bluetooth no disponible" "Activa el servicio: sudo systemctl enable --now bluetooth"
+  exit 1
+fi
+
+# ---------- Apagado: ofrecer encender ----------
+if ! bt show | grep -q "Powered: yes"; then
+  choice=$(printf '󰂯  Encender Bluetooth\n' | menu -p "Bluetooth" -mesg "Bluetooth apagado")
+  if [[ $choice == *Encender* ]]; then
+    rfkill unblock bluetooth
+    sleep 0.5; bt power on >/dev/null && notify "Bluetooth encendido" ""
+  fi
+  exit 0
+fi
+
+# ---------- Lista de dispositivos ----------
+icon_for() {
+  case "$1" in
+    audio-headset|audio-headphones) echo "󰋋" ;;
+    audio-card|audio-speakers)      echo "󰓃" ;;
+    input-mouse)                    echo "󰍽" ;;
+    input-keyboard)                 echo "󰌌" ;;
+    input-gaming)                   echo "󰊴" ;;
+    phone)                          echo "󰏲" ;;
+    computer)                       echo "󰟀" ;;
+    *)                              echo "󰂯" ;;
+  esac
+}
+
+declare -A MAC
+lines=""; connected_names=""
+while read -r _ mac name; do
+  [[ -z $mac ]] && continue
+  # ocultar dispositivos sin nombre (aparecen como su dirección, p. ej. 61-28-58-E3-B9-F9)
+  [[ $name =~ ^([0-9A-Fa-f]{2}[-:]){5}[0-9A-Fa-f]{2}$ ]] && continue
+  info=$(bt info "$mac")
+  icon=$(icon_for "$(sed -n 's/^\s*Icon: //p' <<<"$info")")
+  conn=$(grep -q "Connected: yes" <<<"$info" && echo 1)
+  paired=$(grep -q "Paired: yes" <<<"$info" && echo 1)
+  batt=$(sed -n 's/.*Battery Percentage: .*(\([0-9]*\)).*/\1/p' <<<"$info")
+  label="$icon  $name"
+  [[ -n $batt ]] && label+="  ${batt}%"
+  [[ -n $conn ]] && { label+="  ✓"; connected_names+="${connected_names:+, }$name"; }
+  [[ -z $paired ]] && label+="  (nuevo)"
+  MAC["$label"]="$mac"
+  # conectados primero, luego emparejados, luego nuevos
+  rank=$([[ -n $conn ]] && echo 0 || ([[ -n $paired ]] && echo 1 || echo 2))
+  lines+="$rank"$'\t'"$label"$'\n'
+done < <(bt devices)
+
+devices=$(sort -s -t$'\t' -k1,1n <<<"$lines" | cut -f2 | sed '/^$/d')
+options="󰑐  Buscar dispositivos\n󰂲  Apagar Bluetooth"
+[[ -n $devices ]] && options+="\n$devices"
+mesg="Conectado a: ${connected_names:-ninguno}"
+
+choice=$(printf "%b" "$options" | menu -p "Bluetooth" -mesg "$mesg")
+[[ -z $choice ]] && exit 0
+
+case "$choice" in
+  *"Buscar dispositivos")
+    notify "Buscando dispositivos…" "Pon tu dispositivo en modo emparejamiento"
+    bt --timeout 8 scan on >/dev/null
+    exec "$0" ;;
+  *"Apagar Bluetooth")
+    bt power off >/dev/null && notify "Bluetooth apagado" ""; exit 0 ;;
+esac
+
+mac=${MAC["$choice"]}
+[[ -z $mac ]] && exit 1
+name=$(sed -E 's/^[^ ]+  //; s/  [0-9]+%//; s/  ✓//; s/  \(nuevo\)//' <<<"$choice")
+
+if [[ $choice == *"✓"* ]]; then
+  act=$(printf '󰂲  Desconectar\n󰆴  Olvidar dispositivo\n' | menu -p "$name")
+  case "$act" in
+    *Desconectar) bt disconnect "$mac" >/dev/null && notify "Desconectado" "$name" ;;
+    *Olvidar*)    bt remove "$mac" >/dev/null && notify "Dispositivo olvidado" "$name" ;;
+  esac
+  exit 0
+fi
+
+if [[ $choice == *"(nuevo)"* ]]; then
+  notify "Emparejando…" "$name"
+  if ! bt pair "$mac" | grep -q "Pairing successful"; then
+    notify "No se pudo emparejar" "$name: ¿está en modo emparejamiento?"; exit 1
+  fi
+  bt trust "$mac" >/dev/null
+fi
+
+if bt connect "$mac" | grep -q "Connection successful"; then
+  notify "Conectado" "$name"
+else
+  notify "No se pudo conectar" "$name: ¿está encendido y cerca?"
+fi
