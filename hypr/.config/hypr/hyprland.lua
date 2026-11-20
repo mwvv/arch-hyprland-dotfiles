@@ -29,6 +29,22 @@ hl.monitor({
     scale    = "auto",
 })
 
+-- Pantalla Samsung 4K: 60 Hz (por defecto elegía 30) y escala 2, a la derecha del notebook
+hl.monitor({
+    output   = "desc:Samsung Electric Company SAMSUNG 0x01000E00",
+    mode     = "3840x2160@60",
+    position = "auto-right",
+    scale    = 2,
+})
+
+-- Monitor ASUS VG258QM: 240 Hz, detrás/arriba del notebook (el mouse pasa por el borde de arriba)
+hl.monitor({
+    output   = "desc:ASUSTek COMPUTER INC VG258QM M4LMQS131610",
+    mode     = "1920x1080@240",
+    position = "auto-center-up",
+    scale    = 1,
+})
+
 
 ---------------------
 ---- MY PROGRAMS ----
